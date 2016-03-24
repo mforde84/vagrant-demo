@@ -45,10 +45,10 @@ Vagrant.configure(2) do |config|
         v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
       end
       
-      config.vm.provider "hyperv" do |v|
-        v.customize ["modifyvm", :id, "--vmname", opts[:name]]
-        v.customize ["modifyvm", :id, "--memory", opts[:mem]]
-        v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
+      config.vm.provider "hyperv" do |hv|
+        hv.vmname = opts[:name]
+        hv.memory = opts[:mem]
+        hv.cpus = opts[:cpu]
       end
       
       config.vm.provision :shell, path: opts[:postinstallscript]
