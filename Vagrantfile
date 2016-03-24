@@ -28,7 +28,7 @@ boxes = [
 
 Vagrant.configure(2) do |config|
 
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "hashicorp/precise64"
 
   # Turn off shared folders
   config.vm.synced_folder ".", "/vagrant", id: "vagrant-root", disabled: true
@@ -36,15 +36,20 @@ Vagrant.configure(2) do |config|
   boxes.each do |opts|
     config.vm.define opts[:name] do |config|
       p 'Provisioning: ' + opts[:name] + ' ' + opts[:cpu] + ' CPUs, ' + opts[:mem] + ' RAM'
-      
+    
       config.vm.hostname = opts[:name]
+      config.vm.network :private_network, ip: opts[:eth1]
 
       config.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--memory", opts[:mem]]
         v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
       end
-
-      config.vm.network :private_network, ip: opts[:eth1]
+      
+      config.vm.provider "hyperv" do |v|
+        v.customize ["modifyvm", :id, "--vmname", opts[:name]]
+        v.customize ["modifyvm", :id, "--memory", opts[:mem]]
+        v.customize ["modifyvm", :id, "--cpus", opts[:cpu]]
+      end
       
       config.vm.provision :shell, path: opts[:postinstallscript]
 
